@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: helpdesk-config
+  namespace: helpdesk-ticketing-system
+data:
+  PORT: "4000"
+  JWT_EXPIRES_IN: 8h
+  API_UPSTREAM: http://api:4000

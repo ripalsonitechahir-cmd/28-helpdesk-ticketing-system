@@ -1,0 +1,38 @@
+services:
+  api:
+    build: ./backend
+    image: helpdesk-api:1.0
+    restart: unless-stopped
+    environment:
+      JWT_SECRET: ${JWT_SECRET:-compose-dev-secret-change-me}
+      SEED_AGENT_PASSWORD: ${SEED_AGENT_PASSWORD:-Agent@123}
+    volumes:
+      - db-data:/data # SQLite database file lives here
+
+  web:
+    build: ./frontend
+    image: helpdesk-web:1.0
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-8080}:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+
+  # Stretch goal: auto-closes tickets 7 days after they were Resolved
+  worker:
+    image: helpdesk-api:1.0
+    command: ["node", "src/worker.js"]
+    healthcheck:
+      disable: true # the image's API port check does not apply to the worker
+    restart: unless-stopped
+    environment:
+      AUTO_CLOSE_DAYS: 7
+    volumes:
+      - db-data:/data
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  db-data:

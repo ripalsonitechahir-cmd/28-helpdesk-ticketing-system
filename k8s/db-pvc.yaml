@@ -1,0 +1,11 @@
+# Storage for the SQLite database file.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: helpdesk-db
+  namespace: helpdesk-ticketing-system
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
